@@ -121,7 +121,7 @@ let command_type = {
     begin match Chunk_parser.top_expr Lexer.token lexbuf with
       | { Parsetree.pexp_desc = Parsetree.Pexp_construct (longident,None,_) } ->
         begin
-          try let _, c = Env.lookup_constructor longident.Asttypes.txt env in
+          try let c = Env.lookup_constructor longident.Asttypes.txt env in
             Browse_misc.print_constructor ppf c
           with Not_found ->
           try let _, m = Env.lookup_module longident.Asttypes.txt env in
@@ -242,7 +242,7 @@ let command_seek = {
 
   | [`String "before" ; jpos] ->
     let pos = Protocol.pos_of_json jpos in
-    let cmp o = Location.compare_pos pos (Outline.item_loc o) in
+    let cmp o = Merlin_parsing.compare_pos pos (Outline.item_loc o) in
     let outlines = state.outlines in
     let outlines = History.seek_forward (fun i -> cmp i > 0) outlines in
     let outlines = History.seek_backward
@@ -262,7 +262,7 @@ let command_seek = {
 
   | [`String "exact" ; jpos] ->
     let pos = Protocol.pos_of_json jpos in
-    let cmp o = Location.compare_pos pos (Outline.item_loc o) in
+    let cmp o = Merlin_parsing.compare_pos pos (Outline.item_loc o) in
     let outlines = state.outlines in
     let outlines = History.seek_backward (fun i -> cmp i < 0) outlines in
     let outlines = History.seek_forward (fun i -> cmp i >= 0) outlines in
